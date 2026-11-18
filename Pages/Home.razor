@@ -1,0 +1,31 @@
+@page "/"
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div class="game-container">
+    <canvas id="gameCanvas" class="game-canvas"></canvas>
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Small delay to ensure canvas is in DOM
+            await Task.Delay(100);
+            await JS.InvokeVoidAsync("NeonBreakoutInterop.init", "gameCanvas");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("NeonBreakoutInterop.destroy");
+        }
+        catch
+        {
+            // Component may already be disposed
+        }
+    }
+}
